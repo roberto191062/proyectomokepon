@@ -1,0 +1,13 @@
+body { color:red
+widht:20px
+
+}
+
+h1 { color:yelow
+ widht:20px}
+
+  #ingrese Documento { color:blue;
+  widht:30px;
+  border-box:box-size
+  display sytle:block
+  }
