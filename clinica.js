@@ -2,7 +2,7 @@
 
 
 
-class Documentos {
+class Documento {
 
     constructor(numerodocumento, apellido, nombre, edad, sexo, direccion, obrasocial) {
         this.numerodocumento = numerodocumento
@@ -20,23 +20,28 @@ class Documentos {
 document.getElementById('ingreso')
 
     .addEventListener('submit', function (e) {
-     alert(ingreso)
+     
         const apellido = document.getElementById('apellido').value;
-
+         
         const nombre = document.getElementById('nombre').value;
-        const edad = document.getElementById('edad').value;
-        const sexo = document.getElementById('edad').value;
+
+        const edad = document.
+        getElementById('edad').value;
+
+        const sexo = document.getElementById('sexo').value;
+
         const direccion = document.getElementById('direccion').value;
+
         const obrasocial = document.getElementById('obrasocial').value;
 
         
 
-        const Documentos = new Documentos(apellido, nombre, sexo, edad, direccion, obrasocial)
+        const Docu = new Documento(apellido, nombre, sexo, edad, direccion, obrasocial)
 
-        console.log(Documentos.apellido);
+        console.log(new Docu(apellido,nombre,edad,sexo,obrasocial))
 
-        const ui = new ui();
-        ui.addproduct(Documentos);
+        const UI = new UI();
+        UI.addproduct(Docu);
 
         e.preventDefault();
 
@@ -46,23 +51,24 @@ document.getElementById('ingreso')
     )
 
 class UI {
-    addDocumentos(Documentos) {
+    addDocumentos(Docu) {
+        const listado = document.getElementById('listado');
         const element = document.createElement('div');
         element.innerHTML =`
             <div class ="tarjeta">
-                <div class="tarjeta body">
-                    <strong> Documentos Apellido</strong> : ${Documentos.apellido}
+                <div class="tarjeta formato">
+                    <strong> Documentos Apellido</strong> : ${Docu.apellido}
 
-                    <strong> Documentos Nombre</strong> : ${Documentos.nombre};                    
+                    <strong> Documentos Nombre</strong> : ${Docu.nombre};                    
 
                 </div>
 
 
 
 
-            </div>;
+            </div> `;
 
-            listado.appendChild(element);`
+            listado.appendChild(element);
 
     }
 
