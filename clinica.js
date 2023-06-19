@@ -17,10 +17,10 @@ class Documento {
 
 }
 // DOM Events
-document.getElementById('ingreso')
+//document.getElementById('ingreso')
 
-    .addEventListener('submit', function (e) {
-     
+    //.addEventListener('submit', function (e) {
+     function captura() {   
         const apellido = document.getElementById('apellido').value;
          
         const nombre = document.getElementById('nombre').value;
@@ -34,21 +34,23 @@ document.getElementById('ingreso')
 
         const obrasocial = document.getElementById('obrasocial').value;
 
+        console.log(apellido,nombre,edad,sexo)
+    }
         
 
         const Docu = new Documento(apellido, nombre, sexo, edad, direccion, obrasocial)
 
-        console.log(new Docu(apellido,nombre,edad,sexo,obrasocial))
+        console.log( Docu(apellido,nombre,edad,sexo,obrasocial))
 
-        const UI = new UI();
-        UI.addproduct(Docu);
+        const UIT = new UI();
+        UIT.addproduct(Docu);
 
         e.preventDefault();
 
 
 
-      }
-    )
+
+    
 
 class UI {
     addDocumentos(Docu) {
