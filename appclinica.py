@@ -28,7 +28,8 @@ midireccion=StringVar()
 misexo=StringVar()
 miedad=StringVar()
 miobrasocial=StringVar()
-
+micorreo=StringVar()
+mitelefono=StringVar()
 
 # ++++++Funciones+++++++++
 
@@ -40,7 +41,7 @@ def conexionbasedatos():
 
           miCursor.execute (''' 
             CREATE TABLE DATOSUSUARIOS(ID INTEGER PRIMARY KEY 
-            AUTOINCREMENT,DOCUMENTO INTEGER(10) UNIQUE,NOMBRE VARCHAR(50),APELLIDO VARCHAR(50),DIRECCION VARCHAR(50),OBRASOCIAL VARCHAR(50),SEXO VARCHAR(30),EDAD INTEGER(2))''' )
+            AUTOINCREMENT,DOCUMENTO INTEGER(10) UNIQUE,NOMBRE VARCHAR(50),APELLIDO VARCHAR(50),DIRECCION VARCHAR(50),OBRASOCIAL VARCHAR(50),SEXO VARCHAR(30),EDAD INTEGER(2),CORREO VARCHAR(20),TELEFONO VARCHAR(20))''' )
                          
           messagebox.showinfo("Base Datos creada con exito")
      except:
@@ -60,7 +61,9 @@ def borrardatos():
   miedad.set("")
   midireccion.set("")
   misexo.set("")
-  miobrasocial.set("")
+  miobrasocial.set("") 
+  micorreo.set("")
+  mitelefono.set("")
 
 def crear():
 
@@ -70,13 +73,70 @@ def crear():
 
 #miCursor.execute("INSERT INTO DATOSUSUARIOS VALUES (‘"+midoc.get()+"‘,‘"+minombre.get() +"‘,‘"+miapellido.get()+"´,´" +midireccion.get()+"´,´"+misexo.get()+"´,´" 
    # ‘"+miedad.get() +"´,´"+miobrasocial.get() +"´)") 
-    miCursor.execute("INSERT INTO DATOSUSUARIOS(DOCUMENTO,NOMBRE,APELLIDO,SEXO,EDAD,DIRECCION,OBRASOCIAL)VALUES(?,?,?,?,?,?,?)",(midoc.get(),minombre.get(),miapellido.get(),misexo.get(),miedad.get(),midireccion.get(),miobrasocial.get()))
+    miCursor.execute("INSERT INTO DATOSUSUARIOS(DOCUMENTO,NOMBRE,APELLIDO,SEXO,EDAD,DIRECCION,OBRASOCIAL,CORREO,TELEFONO)VALUES(?,?,?,?,?,?,?,?,?)",(midoc.get(),minombre.get(),miapellido.get(),misexo.get(),miedad.get(),midireccion.get(),miobrasocial.get(),micorreo.get(),mitelefono.get()))
 
-    miConexion.commit
+    miConexion.commit()
 
-    messagebox.showinfo("usuarios","registro insertado con exito")
-          
+    messagebox.showinfo("usuarios","registro insertado con exito") 
 
+def listar():
+
+    miConexion=sqlite3.connect("usuarios.db")
+    miCursor=miConexion.cursor()
+
+    miCursor.execute("SELECT * FROM DATOSUSUARIOS WHERE DOCUMENTO="+midoc.get())
+    elpaciente=miCursor.fetchall
+    for usuarios in elpaciente():
+      midoc.set(usuarios[1])
+      minombre.set(usuarios[2])
+      miapellido.set(usuarios[3])
+      miedad.set(usuarios[4])
+      misexo.set(usuarios[5])
+      midireccion.set(usuarios[6])
+      miobrasocial.set(usuarios[7])
+      micorreo.set(usuarios[8])
+      mitelefono.set(usuarios[9])
+
+    miConexion.commit() 
+
+
+def actualizar():   
+
+  miConexion=sqlite3.connect("usuarios.db")
+  miCursor=miConexion.cursor()
+
+  valores=(midoc.get(),
+  minombre.get(),
+  miapellido.get(),
+  misexo.get(),
+  miedad.get(),
+  midireccion.get(),
+  miobrasocial.get(),
+  micorreo.get(),
+  mitelefono.get())
+
+  
+
+ # consulta= """ UPDATE DATOSUSUARIOS SET NOMBRE=?,APELLIDO=?,SEXO=?,EDAD=?,DIRECCION=?,OBRASOCIAL=? WHERE DOCUMENTO=?"""  
+ # miCursor.execute(consulta,valores)
+
+
+  miCursor.execute("UPDATE DATOSUSUARIOS SET DOCUMENTO=?,NOMBRE=?,APELLIDO=?,SEXO=?,EDAD=?,DIRECCION=?,OBRASOCIAL=?,CORREO=?,TELEFONO=?"+"WHERE DOCUMENTO=" +midoc.get(),(valores))
+   
+  
+  miConexion.commit()
+
+  messagebox.showinfo("usuarios","registro Actualizado con exito") 
+
+def eliminar():
+
+    miConexion=sqlite3.connect("usuarios.db")
+    miCursor=miConexion.cursor()
+
+    miCursor.execute("DELETE FROM DATOSUSUARIOS WHERE DOCUMENTO="+midoc.get())
+
+    miConexion.commit()
+    messagebox.showinfo("Registro borrado con exito")
 
 def carga():
     
@@ -92,13 +152,22 @@ def carga():
      #*****Botones********
          
      botonborrar=Button(miframe1,text="Borrar",command=borrardatos)
-     botonborrar.grid(row=9,column=0,sticky="e",padx=10,pady=10)
+     botonborrar.grid(row=11,column=2,sticky="e",padx=10,pady=10)
 
      botoncrear=Button(miframe1,text="Grabar",command=crear) 
-     botoncrear.grid( row=9,column=2,sticky="e",padx=10,pady=10)
+     botoncrear.grid( row=11,column=3,sticky="e",padx=10,pady=10)
 
      botonsalir=Button(miframe1,text="Salir",command=root)
-     botonsalir.grid(row=9,column=1,sticky="e",padx=10,pady=10)
+     botonsalir.grid(row=11,column=7,sticky="e",padx=10,pady=10)
+
+     botonsalir=Button(miframe1,text="Listar",command=listar)
+     botonsalir.grid(row=11,column=4,sticky="e",padx=10,pady=10) 
+
+     botonsalir=Button(miframe1,text="Actualizar",command=actualizar)
+     botonsalir.grid(row=11,column=5,sticky="e",padx=10,pady=10) 
+
+     botoneliminar=Button(miframe1,text="Eliminar",command=eliminar)
+     botoneliminar.grid(row=11,column=6,sticky="e",padx=10,pady=10) 
 
 
 
@@ -111,53 +180,62 @@ def carga():
      #miobrasocial=StringVar()
 
      Id=Entry(miframe1,textvariable=miid)
-     Id.grid(row=1,column=1)
+     Id.grid(row=1,column=2)
      IdLabel=Label(miframe1,text="Id")
-     IdLabel.grid(row=1,column=0,sticky="e",padx=10,pady=10)
+     IdLabel.grid(row=1,column=1,sticky="e",padx=10,pady=10)
 
 
 
 
      documento=Entry(miframe1,textvariable=midoc)
-     documento.grid(row=2,column=1)
+     documento.grid(row=2,column=2)
      documentoLabel=Label(miframe1,text="Documento")
-     documentoLabel.grid(row=2,column=0,sticky="e",padx=10,pady=10)
+     documentoLabel.grid(row=2,column=1,sticky="e",padx=10,pady=10)
 
 
      nombre=Entry(miframe1,textvariable=minombre)
-     nombre.grid(row=3,column=1)
+     nombre.grid(row=3,column=2)
      nombreLabel=Label(miframe1,text="Nombre")
-     nombreLabel.grid(row=3,column=0,sticky="e",padx=10,pady=10)
+     nombreLabel.grid(row=3,column=1,sticky="e",padx=10,pady=10)
 
       
 
      apellido=Entry(miframe1,textvariable=miapellido)
-     apellido.grid(row=4,column=1)
+     apellido.grid(row=4,column=2)
      apellidoLabel=Label(miframe1,text="Apellido")
-     apellidoLabel.grid(row=4,column=0,sticky="e",padx=10,pady=10)
+     apellidoLabel.grid(row=4,column=1,sticky="e",padx=10,pady=10)
 
      sexo=Entry(miframe1,textvariable=misexo)
-     sexo.grid(row=5,column=1)
+     sexo.grid(row=5,column=2)
      sexoLabel=Label(miframe1,text="Sexo")
-     sexoLabel.grid(row=5,column=0,sticky="e",padx=10,pady=10)
+     sexoLabel.grid(row=5,column=1,sticky="e",padx=10,pady=10)
 
      edad=Entry(miframe1,textvariable=miedad)
-     edad.grid(row=6,column=1)
+     edad.grid(row=6,column=2)
      edadLabel=Label(miframe1,text="Edad")
-     edadLabel.grid(row=6,column=0,sticky="e",padx=10,pady=10)
+     edadLabel.grid(row=6,column=1,sticky="e",padx=10,pady=10)
 
 
      direccion=Entry(miframe1,textvariable=midireccion)
-     direccion.grid(row=7,column=1)
+     direccion.grid(row=7,column=2)
      direccionLabel=Label(miframe1,text="Direccion")
-     direccionLabel.grid(row=7,column=0,sticky="e",padx=10,pady=10)
+     direccionLabel.grid(row=7,column=1,sticky="e",padx=10,pady=10)
      
 
      obrasocial=Entry(miframe1,textvariable=miobrasocial)
-     obrasocial.grid(row=8,column=1)
+     obrasocial.grid(row=8,column=2)
      obrasocialLabel=Label(miframe1,text="Obra social")
-     obrasocialLabel.grid(row=8,column=0,sticky="e",padx=10,pady=10)
+     obrasocialLabel.grid(row=8,column=1,sticky="e",padx=10,pady=10)
 
+     mail=Entry(miframe1,textvariable=micorreo)
+     mail.grid(row=9,column=2)
+     mailLabel=Label(miframe1,text="Correo")
+     mailLabel.grid(row=9,column=1,sticky="e",padx=10,pady=10)
+
+     telefono=Entry(miframe1,textvariable=mitelefono)
+     telefono.grid(row=10,column=2)
+     telefonolabel=Label(miframe1,text="Telefono")
+     telefonolabel.grid(row=10,column=1,sticky="e",padx=10,pady=10)
 
      
      
