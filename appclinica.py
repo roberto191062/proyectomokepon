@@ -7,7 +7,7 @@ from tkinter import *
 
 import sqlite3
 from tkinter import messagebox
-
+from datetime import datetime
 root=Tk()
 #root=tk.Tk()
 root.title("Clinica")
@@ -44,9 +44,8 @@ medobrasocial=StringVar()
 medcorreo=StringVar()
 medtelefono=StringVar()
 
-
-
-
+fechahora=datetime
+varfechahora=StringVar()
 
 
 
@@ -70,6 +69,13 @@ def conexionbasedatos():
             AUTOINCREMENT,DOCUMENTO INTEGER(10) UNIQUE, MATRICULA VARCHAR(20) UNIQUE,NOMBRE VARCHAR(50),APELLIDO VARCHAR(50),DIRECCION VARCHAR(50),OBRASOCIAL VARCHAR(50),SEXO VARCHAR(30),EDAD INTEGER(2),CORREO VARCHAR(20),TELEFONO VARCHAR(20))''' )
 
 
+          miCursor.execute (''' 
+            CREATE TABLE  TURNOS (ID INTEGER PRIMARY KEY 
+            AUTOINCREMENT,DOCUMENTO INTEGER(10), MATRICULA VARCHAR(20) NOT NULL ,FECHAHORA DATETIME ,midoc INTEGER,medmatricula VARCHAR(20), FOREIGN KEY(midoc) REFERENCES DATOSUSUARIOS(midoc),FOREIGN KEY (medmatricula) REFERENCES DATOSMEDICOS(medmatricula))''' )
+
+
+
+
 
 
 
@@ -79,7 +85,7 @@ def conexionbasedatos():
 
      miConexion.commit()
         
-    # miConexion.close()
+     miConexion.close()
 
 
 
@@ -112,7 +118,7 @@ def borrardatosmed():
   medobrasocial.set("") 
   medcorreo.set("")
   medtelefono.set("")
-  
+
                     
 
 
@@ -152,12 +158,20 @@ def crearmed():
     messagebox.showinfo("usuarios","registro insertado con exito") 
 
 
+def crearturnos(midoc,medmatricula,fechahora):
+  if isinstance (fechahora,datetime):
+   fechahora=fechahora.strftime("%y-%m-%d %H:%M:%S")
+
+   miConexion=sqlite3.connect("usuarios.db")
+
+   miCursor=miConexion.cursor()
+
+   miCursor.execute("INSERT INTO TURNOS (MATRICULA,DOCUMENTO,FECHAHORA)VALUES(?,?,?)",(medmatricula.get(),medoc.get(),fechahora))
 
 
+   miConexion.commit()
 
-
-
-
+   messagebox.showinfo("usuarios","registro insertado con exito") 
 
 
 
@@ -298,11 +312,17 @@ def eliminar():
 def mostrarroot():
     miframe1.pack_forget()
     root.title("Clinica")
+    
+
 
 def mostrarroot2():
     miframe2.pack_forget()
     root.title("Clinica")
        
+
+def mostrarroot3():
+    miframe3.pack_forget()
+    root.title("Clinica")
 
      
 
@@ -332,11 +352,11 @@ def carga():
      botonsalir=Button(miframe1,text="Salir",command=mostrarroot)
      botonsalir.grid(row=12,column=7,sticky="e",padx=10,pady=10)
 
-     botonsalir=Button(miframe1,text="Listar",command=listar)
-     botonsalir.grid(row=12,column=4,sticky="e",padx=10,pady=10) 
+     botonlistar=Button(miframe1,text="Listar",command=listar)
+     botonlistar.grid(row=12,column=4,sticky="e",padx=10,pady=10) 
 
-     botonsalir=Button(miframe1,text="Actualizar",command=actualizar)
-     botonsalir.grid(row=12,column=5,sticky="e",padx=10,pady=10) 
+     botonactualizar=Button(miframe1,text="Actualizar",command=actualizar)
+     botonactualizar.grid(row=12,column=5,sticky="e",padx=10,pady=10) 
 
      botoneliminar=Button(miframe1,text="Eliminar",command=eliminar)
      botoneliminar.grid(row=12,column=6,sticky="e",padx=10,pady=10) 
@@ -495,18 +515,74 @@ def carga2():
   botoneliminar.grid(row=11,column=6,sticky="e",padx=10,pady=10) 
 
 
+def cargaturnos():
+   
+     global  miframe3
+
+     miframe3=Frame(root)
+     root.title("Ingreso Turnos")
+     miframe3.pack() 
+     
+
+     matricula=Entry(miframe3,textvariable=medmatricula)
+     matricula.grid(row=1,column=2)
+     matriculaLabel=Label(miframe3,text="Matricula")
+     matriculaLabel.grid(row=1,column=1,sticky="e",padx=10,pady=10)
 
 
+     nombre=Entry(miframe3,textvariable=mednombre)
+     nombre.grid(row=2,column=2)
+     nombreLabel=Label(miframe3,text="Nombre")
+     nombreLabel.grid(row=2,column=1,sticky="e",padx=10,pady=10)
+
+      
+
+     apellido=Entry(miframe3,textvariable=miapellido)
+     apellido.grid(row=3,column=2)
+     apellidoLabel=Label(miframe3,text="Apellido")
+     apellidoLabel.grid(row=3,column=1,sticky="e",padx=10,pady=10)
 
 
+     documento=Entry(miframe3,textvariable=midoc)
+     documento.grid(row=4,column=2)
+     documentoLabel=Label(miframe3,text="Documento")
+     documentoLabel.grid(row=4,column=1,sticky="e",padx=10,pady=10)
 
 
+     nombre=Entry(miframe3,textvariable=minombre)
+     nombre.grid(row=5,column=2)
+     nombreLabel=Label(miframe3,text="Nombre")
+     nombreLabel.grid(row=5,column=1,sticky="e",padx=10,pady=10)
 
+      
 
+     apellido=Entry(miframe3,textvariable=miapellido)
+     apellido.grid(row=6,column=2)
+     apellidoLabel=Label(miframe3,text="Apellido")
+     apellidoLabel.grid(row=6,column=1,sticky="e",padx=10,pady=10)
 
+     fechahora=Entry(miframe3,textvariable=varfechahora)
+     fechahora.grid(row=7,column=2)
+     fechahoraLabel=Label(miframe3,text="Fecha Hora")
+     fechahoraLabel.grid(row=7,column=1,sticky="e",padx=10,pady=10)
 
+     botonborrar=Button(miframe3,text="Borrar",command=borrardatos)
+     botonborrar.grid(row=12,column=2,sticky="e",padx=10,pady=10)
 
+     botoncrear=Button(miframe3,text="Grabar",command=crearturnos) 
+     botoncrear.grid( row=12,column=3,sticky="e",padx=10,pady=10)
 
+     botonsalir=Button(miframe3,text="Salir",command=mostrarroot3)
+     botonsalir.grid(row=12,column=7,sticky="e",padx=10,pady=10)
+
+     botonlistar=Button(miframe3,text="Listar",command=listar)
+     botonlistar.grid(row=12,column=4,sticky="e",padx=10,pady=10) 
+
+     botonactualizar=Button(miframe3,text="Actualizar",command=actualizar)
+     botonactualizar.grid(row=12,column=5,sticky="e",padx=10,pady=10) 
+
+     botoneliminar=Button(miframe3,text="Eliminar",command=eliminar)
+     botoneliminar.grid(row=12,column=6,sticky="e",padx=10,pady=10) 
 
 
 
@@ -537,7 +613,7 @@ menu_pacientes.add_command(label="Salir",command=root)
 
 menu_medicos.add_command(label="carga medicos",command=carga2)
 
-
+menu_turnos.add_command(label="Carga Turnos",command=cargaturnos)
 
 
 menu_base.add_command(label="conectar", command=conexionbasedatos)
